@@ -45,11 +45,11 @@
 }
 
 .plotsContainer > div:first-child {
-  flex: 9; 
-  height: 400px; 
+  flex: 9;
+  height: 400px;
 }
 
 .plotsContainer > div:last-child {
   flex: 1;
-  height: 400px; 
+  height: 400px;
 }

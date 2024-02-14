@@ -1,43 +1,23 @@
-import {
-  bestChannelColor,
-  activeChannelsColor,
-  plotFont,
-  percentageToFilterChannels,
-} from "../styles/StyleConstants"; // Adjusted to match the file name case
+import { bestChannelColor, activeChannelsColor, plotFont, percentageToFilterChannels } from "../styles/StyleConstants"; // Adjusted to match the file name case
 import calculatePeakToPeakValues from "../utils/CalculationUtils";
 import React, { useEffect } from "react";
 import Plot from "plotly.js-dist";
 
-function SingleTemplatePlot({
-  template_index,
-  templateArray,
-  samplingFrequency,
-}) {
+function SingleTemplatePlot({ template_index, templateArray, samplingFrequency }) {
   useEffect(() => {
     const loadPlotData = async () => {
       if (!templateArray) return; // Exit early if templateArray is not available
 
       try {
-        const singleTemplate = await templateArray.get([
-          template_index,
-          null,
-          null,
-        ]);
+        const singleTemplate = await templateArray.get([template_index, null, null]);
         const peak_to_peak_values = calculatePeakToPeakValues(singleTemplate);
-        const bestChannel = peak_to_peak_values.indexOf(
-          Math.max(...peak_to_peak_values)
-        );
+        const bestChannel = peak_to_peak_values.indexOf(Math.max(...peak_to_peak_values));
         const bestChannelPeakToPeak = peak_to_peak_values[bestChannel];
-        const singleTemplateBestChannel = singleTemplate.get([
-          null,
-          bestChannel,
-        ]);
+        const singleTemplateBestChannel = singleTemplate.get([null, bestChannel]);
 
         const numberOfSamples = await singleTemplate.shape[0];
         const xData = Array.from({ length: numberOfSamples }, (_, i) => i);
-        const timeMilliseconds = xData.map(
-          (value) => (value / samplingFrequency) * 1000.0
-        );
+        const timeMilliseconds = xData.map((value) => (value / samplingFrequency) * 1000.0);
 
         // Initialize an array to hold plot data for all channels
         let plotData = [];
@@ -59,18 +39,11 @@ function SingleTemplatePlot({
         const numberOfChannels = await singleTemplate.shape[1];
         let firstChannelFound = true;
 
-        for (
-          let channelIndex = 0;
-          channelIndex < numberOfChannels;
-          channelIndex++
-        ) {
+        for (let channelIndex = 0; channelIndex < numberOfChannels; channelIndex++) {
           const channelData = await singleTemplate.get([null, channelIndex]);
           const yData = channelData.data;
           const channelPeakToPeak = peak_to_peak_values[channelIndex];
-          if (
-            channelPeakToPeak >=
-            bestChannelPeakToPeak * percentageToFilterChannels
-          ) {
+          if (channelPeakToPeak >= bestChannelPeakToPeak * percentageToFilterChannels) {
             if (channelIndex === bestChannel) {
               continue;
             }

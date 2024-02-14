@@ -2,7 +2,8 @@ import {
   bestChannelColor,
   activeChannelsColor,
   plotFont,
-  percentageToFilterChannels,gi
+  percentageToFilterChannels,
+  gi,
 } from "../styles/StyleConstants"; // Adjusted to match the file name case
 import React, { useEffect } from "react";
 import Plot from "plotly.js-dist";
@@ -89,9 +90,7 @@ function ProbePlot({ xCoordinates, yCoordinates, location, activeIndices }) {
     });
   }, [xCoordinates, yCoordinates, x_location, y_location, activeIndices]);
 
-  return (
-    <div id="probePlotDiv" style={{ width: "100%", height: "400px" }}></div>
-  );
+  return <div id="probePlotDiv" style={{ width: "100%", height: "400px" }}></div>;
 }
 
 export default ProbePlot;
