@@ -1,12 +1,8 @@
-import {
-  bestChannelColor,
-  activeChannelsColor,
-  plotFont,
-} from "../styles/StyleConstants"; // Adjusted to match the file name case
+import { bestChannelColor, activeChannelsColor, plotFont } from "../styles/StyleConstants"; // Adjusted to match the file name case
 import React, { useEffect } from "react";
 import Plot from "plotly.js-dist";
 
-function ProbePlot({ xCoordinates, yCoordinates, location, activeIndices }) {
+function ProbePlot({ templateIndex, xCoordinates, yCoordinates, location, activeIndices }) {
   const x_location = location[0];
   const y_location = location[1];
   let activeLocationsX = [];
@@ -25,35 +21,7 @@ function ProbePlot({ xCoordinates, yCoordinates, location, activeIndices }) {
   const maxY = Math.max(...yCoordinates);
 
   useEffect(() => {
-    // const plotData = [
-    //   // Marker for a specific location
-    //   {
-    //     x: [0.5],
-    //     y: [y_location],
-    //     type: "scatter",
-    //     mode: "markers",
-    //     marker: { color: bestChannelColor, size: 10, symbol: "star" }, // Use a distinct color and symbol
-    //     name: "Location",
-    //     showlegend: false,
-    //   },
-    //   // Background representing the probe
-    // ];
-
-    // // Highlighting the active area across Y coordinates of active channels
-    // activeIndices.forEach(channelIndex => {
-    //   const yValue = yCoordinates[channelIndex];
-    //   const xValue = xCoordinates[channelIndex];
-    //   console.log("yValue: ", yValue);
-    //   plotData.push({
-    //     x: [0.5],
-    //     y: [yValue],
-    //     type: "scatter",
-    //     mode: "markers",
-    //     marker: { color: activeChannelsColor, size: 5, symbol: "circle" }, 
-    //     showlegend: false,
-    //   });
-    // });
-    const plotData = []
+    const plotData = [];
     const plotLayout = {
       title: "Location in Probe",
       autosize: true,
@@ -100,16 +68,17 @@ function ProbePlot({ xCoordinates, yCoordinates, location, activeIndices }) {
             color: bestChannelColor,
             width: 1,
           },
-        },        
+        },
       ],
     };
 
-    Plot.newPlot("probePlotDiv", plotData, plotLayout, {
+    const probePlotDivId = `probePlotDiv${templateIndex}`; // Unique ID for each plot
+    Plot.newPlot(probePlotDivId, plotData, plotLayout, {
       displayModeBar: false,
     });
-  }, []);
+  }, [templateIndex]);
 
-  return <div id="probePlotDiv" style={{ width: "100%", height: "400px" }}></div>;
+  return <div id={`probePlotDiv${templateIndex}`} style={{ width: "100%", height: "400px" }}></div>;
 }
 
 export default ProbePlot;

@@ -1,154 +1,108 @@
-import React, { useState, useEffect, useRef } from "react";
-import { openGroup, HTTPStore } from "zarr";
-import "../styles/App.css";
-import calculatePeakToPeakValues from "../utils/CalculationUtils";
-
-import ProbePlot from "./ProbePlot";
+import React, { useState, useRef, useEffect } from "react";
+import { HTTPStore } from "zarr";
 import SingleTemplatePlot from "./SingleTemplatePlot";
+import ProbePlot from "./ProbePlot";
 import DataTablePlot from "./DataTablePlot";
-
-const percentageToFilterChannels = 0.1;
+import { openGroup } from "zarr";
+import calculatePeakToPeakValues from "../utils/CalculationUtils";
+import { percentageToFilterChannels } from "../styles/StyleConstants";
+import "../styles/App.css";
 
 function App() {
   const s3Url = "https://spikeinterface-template-database.s3.us-east-2.amazonaws.com/test_templates";
-  const storeRef = useRef(null); // Don't recreate the store on every render
-  const zarrGroupRef = useRef(null);
-  const probeGroupRef = useRef(null);
-  let template_index = 5;
+  const storeRef = useRef(new HTTPStore(s3Url)); // Store reference for data fetching
+  const [templateIndices, setTemplateIndices] = useState([0, 5, 10]); // Example indices, adjust as needed
 
+  return (
+    <div className="App">
+      <h2>Template plots</h2>
+      <div className="ColumnPlotContainer">
+        {templateIndices.map((templateIndex) => (
+          <RowPlotContainer key={templateIndex} templateIndex={templateIndex} storeRef={storeRef.current} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+const RowPlotContainer = ({ templateIndex, storeRef }) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [templateArray, setTemplateArray] = useState(null);
   const [probeXCoordinates, setProbeXCoordinates] = useState([]);
   const [probeYCoordinates, setProbeYCoordinates] = useState([]);
   const [location, setLocation] = useState([0, 0]);
   const [samplingFrequency, setSamplingFrequency] = useState(null);
   const [activeIndices, setActiveIndices] = useState([]);
+  const [templateArray, setTemplateArray] = useState([]);
   const [tableData, setTableData] = useState([]);
-  const [templateIndices, setTemplateIndices] = useState([0, 5]); 
+
   useEffect(() => {
     const loadData = async () => {
-      if (!storeRef.current) {
-        storeRef.current = new HTTPStore(s3Url);
-      }
-
       try {
-        if (!zarrGroupRef.current) {
-          zarrGroupRef.current = await openGroup(storeRef.current);
-        }
-        if (!probeGroupRef.current) {
-          probeGroupRef.current = await openGroup(storeRef.current, "probe", "r");
-        }
-        // Get sampling frequency
-        const attributes = await zarrGroupRef.current.attrs.asObject();
+        const zarrGroup = await openGroup(storeRef);
+        const probeGroup = await openGroup(storeRef, "probe", "r");
+
+        // Fetch sampling frequency
+        const attributes = await zarrGroup.attrs.asObject();
         setSamplingFrequency(attributes["sampling_frequency"]);
 
-        // get probe data
-        const xCoords_object = await probeGroupRef.current.getItem("x");
-        const yCoords_object = await probeGroupRef.current.getItem("y");
-        const xCoords = await xCoords_object.get(null);
-        const yCoords = await yCoords_object.get(null);
-        const xCoordsData = xCoords.data;
-        const yCoordsData = yCoords.data;
+        // Fetch probe data
+        const xCoords = await probeGroup.getItem("x").then(data => data.get(null));
+        const yCoords = await probeGroup.getItem("y").then(data => data.get(null));
+        setProbeXCoordinates(xCoords.data);
+        setProbeYCoordinates(yCoords.data);
 
-        setProbeXCoordinates(xCoordsData);
-        setProbeYCoordinates(yCoordsData);
-
-        // get template data
-        const _templateArray = await zarrGroupRef.current.getItem("templates_array");
-        setTemplateArray(_templateArray);
-
-        // Get template location
-        const singleTemplate = await _templateArray.get([template_index, null, null]);
+        // Fetch template data for a specific index
+        const templateArray = await zarrGroup.getItem("templates_array");
+        setTemplateArray(templateArray);
+        const singleTemplate = await templateArray.get([templateIndex, null, null]);
         const peakToPeakValues = calculatePeakToPeakValues(singleTemplate);
         const bestChannel = peakToPeakValues.indexOf(Math.max(...peakToPeakValues));
-        const bestChannelPeakToPeak = peakToPeakValues[bestChannel];
-
-        const numberOfChannels = await singleTemplate.shape[1];
-        const _activeIndices = [];
-        // iterate over the number of channels and find those whose peak to peak values are greater than the best channel
-        for (let channelIndex = 0; channelIndex < numberOfChannels; channelIndex++) {
-          const channelPeakToPeak = peakToPeakValues[channelIndex];
-          if (channelPeakToPeak >= bestChannelPeakToPeak * percentageToFilterChannels) {
-            if (channelIndex === bestChannel) {
-              continue;
-            }
-            _activeIndices.push(channelIndex);
-          }
-        }
+        
+        // Active indices calculation
+        const _activeIndices = peakToPeakValues.map((value, index) => value >= peakToPeakValues[bestChannel] * percentageToFilterChannels ? index : null).filter(index => index !== null);
         setActiveIndices(_activeIndices);
 
-        // mockup data for the table
+        // Set table data (mockup or real)
         const data = [
           { attribute: "Attribute 1", value: "Value 1" },
           { attribute: "Attribute 2", value: "Value 2" },
           { attribute: "Attribute 3", value: "Value 3" },
-          // Add more rows as needed
         ];
         setTableData(data);
 
-        const locationX = xCoordsData[bestChannel];
-        const locationY = yCoordsData[bestChannel];
+        // Set location based on best channel
+        const locationX = xCoords.data[bestChannel];
+        const locationY = yCoords.data[bestChannel];
         setLocation([locationX, locationY]);
+
+        setIsLoading(false);
       } catch (error) {
-        console.error("Error loading data:", error);
-      } finally {
+        console.error("Error loading data for template index " + templateIndex + ":", error);
         setIsLoading(false);
       }
     };
 
     loadData();
-  }, []); // an empty dependency array means this effect will only run once
+  }, [templateIndex, storeRef]); // Dependency array to ensure re-fetching when these values change
 
-  // Update the return statement in the App component
-  return (
-    <div className="App">
-      <h2>Template plots</h2>
-      {!isLoading && templateArray ? (
-        <div className="ColumnPlotContainer">
-          {templateIndices.map((template_index) => (
-            <RowPlotContainer
-              key={template_index}
-              template_index={template_index}
-              templateArray={templateArray}
-              samplingFrequency={samplingFrequency}
-              probeXCoordinates={probeXCoordinates}
-              probeYCoordinates={probeYCoordinates}
-              location={location}
-              activeIndices={activeIndices}
-              tableData={tableData}
-            />
-          ))}
-        </div>
-      ) : (
-        <div>Loading template data...</div>
-      )}
-    </div>
-  );
-}
+  if (isLoading) {
+    return <div>Loading data for template {templateIndex}...</div>;
+  }
 
-
-export default App;
-
-
-const RowPlotContainer = ({
-  template_index,
-  templateArray,
-  samplingFrequency,
-  probeXCoordinates,
-  probeYCoordinates,
-  location,
-  activeIndices,
-  tableData
-}) => {
   return (
     <div className="RowPlotContainer">
       <SingleTemplatePlot
-        template_index={template_index}
+        templateIndex={templateIndex}
         templateArray={templateArray}
-        samplingFrequency={samplingFrequency}
+        probeXCoordinates={probeXCoordinates}
+        probeYCoordinates={probeYCoordinates}
         activeIndices={activeIndices}
+        samplingFrequency={samplingFrequency}
       />
       <ProbePlot
+        templateIndex={templateIndex}
         xCoordinates={probeXCoordinates}
         yCoordinates={probeYCoordinates}
         location={location}
@@ -158,4 +112,3 @@ const RowPlotContainer = ({
     </div>
   );
 };
-

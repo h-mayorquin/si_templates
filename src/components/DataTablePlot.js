@@ -2,7 +2,6 @@ import React from "react";
 
 function DataTablePlot({tableData}) {
 
-  console.log("tableData: ", tableData);
   
   return (
     <div style={{ height: "400px" }}>

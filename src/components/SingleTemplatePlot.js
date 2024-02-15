@@ -3,13 +3,13 @@ import calculatePeakToPeakValues from "../utils/CalculationUtils";
 import React, { useEffect } from "react";
 import Plot from "plotly.js-dist";
 
-function SingleTemplatePlot({ template_index, templateArray, samplingFrequency, activeIndices }) {
+function SingleTemplatePlot({ templateIndex, templateArray, samplingFrequency, activeIndices }) {
   useEffect(() => {
     const loadPlotData = async () => {
       if (!templateArray) return; // Exit early if templateArray is not available
 
       try {
-        const singleTemplate = await templateArray.get([template_index, null, null]);
+        const singleTemplate = await templateArray.get([templateIndex, null, null]);
         const peak_to_peak_values = calculatePeakToPeakValues(singleTemplate);
         const bestChannel = peak_to_peak_values.indexOf(Math.max(...peak_to_peak_values));
         const singleTemplateBestChannel = singleTemplate.get([null, bestChannel]);
@@ -56,7 +56,7 @@ function SingleTemplatePlot({ template_index, templateArray, samplingFrequency, 
         });
 
         const plotLayout = {
-          title: `Template Index: ${template_index}`,
+          title: `Template Index: ${templateIndex}`,
           autosize: true,
           font: plotFont,
           xaxis: { title: "Time (ms)", showgrid: false },
@@ -68,17 +68,17 @@ function SingleTemplatePlot({ template_index, templateArray, samplingFrequency, 
             yanchor: "bottom",
           },
         };
-
-        Plot.newPlot("plotDiv", plotData, plotLayout, { displayModeBar: false });
+        const plotDivId = `plotDiv${templateIndex}`; // Unique ID for each plot
+        Plot.newPlot(plotDivId, plotData, plotLayout, { displayModeBar: false });
       } catch (error) {
         console.error("Error loading plot data:", error);
       }
     };
 
     loadPlotData();
-  }, []); // Dependency array to re-run this effect when template_index or templateArray changes
+  }, [templateIndex]); // Dependency array to re-run this effect when templateIndex or templateArray changes
 
-  return <div id="plotDiv" style={{ width: "100%", height: "400px" }}></div>;
+  return <div id={`plotDiv${templateIndex}`} style={{ width: "100%", height: "400px" }}></div>;
 }
 
 export default SingleTemplatePlot;

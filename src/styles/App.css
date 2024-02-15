@@ -72,7 +72,7 @@
 }
 
 .RowPlotContainer > div:nth-child(2) {
-  flex: 0.1; /* Takes up 1 part of the space */
+  flex: 1.0; /* Takes up 1 part of the space */
 }
 
 .RowPlotContainer > div:last-child {
