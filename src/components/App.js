@@ -24,7 +24,7 @@ function App() {
   const [samplingFrequency, setSamplingFrequency] = useState(null);
   const [activeIndices, setActiveIndices] = useState([]);
   const [tableData, setTableData] = useState([]);
-
+  const [templateIndices, setTemplateIndices] = useState([0, 5]); 
   useEffect(() => {
     const loadData = async () => {
       if (!storeRef.current) {
@@ -104,16 +104,21 @@ function App() {
     <div className="App">
       <h2>Template plots</h2>
       {!isLoading && templateArray ? (
-        <RowPlotsContainer
-          template_index={template_index}
-          templateArray={templateArray}
-          samplingFrequency={samplingFrequency}
-          probeXCoordinates={probeXCoordinates}
-          probeYCoordinates={probeYCoordinates}
-          location={location}
-          activeIndices={activeIndices}
-          tableData={tableData}
-        />
+        <div className="ColumnPlotContainer">
+          {templateIndices.map((template_index) => (
+            <RowPlotContainer
+              key={template_index}
+              template_index={template_index}
+              templateArray={templateArray}
+              samplingFrequency={samplingFrequency}
+              probeXCoordinates={probeXCoordinates}
+              probeYCoordinates={probeYCoordinates}
+              location={location}
+              activeIndices={activeIndices}
+              tableData={tableData}
+            />
+          ))}
+        </div>
       ) : (
         <div>Loading template data...</div>
       )}
@@ -121,10 +126,11 @@ function App() {
   );
 }
 
+
 export default App;
 
 
-const RowPlotsContainer = ({
+const RowPlotContainer = ({
   template_index,
   templateArray,
   samplingFrequency,
@@ -135,7 +141,7 @@ const RowPlotsContainer = ({
   tableData
 }) => {
   return (
-    <div className="plotsContainer">
+    <div className="RowPlotContainer">
       <SingleTemplatePlot
         template_index={template_index}
         templateArray={templateArray}

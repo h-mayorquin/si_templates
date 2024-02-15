@@ -1,5 +1,8 @@
+/* General App styling */
 .App {
   text-align: center;
+  width: 100%; /* Ensure the App fills the entire width */
+  padding: 20px; /* Add some padding around the app */
 }
 
 .App-logo {
@@ -37,38 +40,54 @@
   }
 }
 
-.plotsContainer {
+/* Styling for container holding the row plots */
+.ColumnPlotContainer {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between; /* Distributes the children across the container's main axis */
-  align-items: stretch; /* Children will fill the container height, but we'll override this for centering content */
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 20px; /* Adjust space between each RowPlotContainer */
+  width: 100%; /* Use full width to avoid compression */
 }
 
-/* Targeting the direct children of .plotsContainer for specific flex values */
-.plotsContainer > div {
+/* Styling for each row plot container */
+.RowPlotContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+  width: 100%; /* Adjust to ensure containers are not compressed */
+}
+
+.RowPlotContainer> div {
   display: flex;
   justify-content: center; /* Center children horizontally */
   align-items: center; /* Center children vertically */
   flex-direction: column; /* Aligns children content vertically for when you need more control inside the divs */
 }
 
-
-.plotsContainer > div:first-child {
-  flex: 5; /* 60% of the space */
+/* Specific flex values for child divs to maintain desired ratios */
+.RowPlotContainer > div:first-child {
+  flex: 8; /* Takes up 5 parts of the space */
 }
 
-.plotsContainer > div:nth-child(2) {
-  flex: 1; /* 10% of the space */
+.RowPlotContainer > div:nth-child(2) {
+  flex: 0.1; /* Takes up 1 part of the space */
 }
 
-.plotsContainer > div:last-child {
-  flex: 2.5; /* 30% of the space */
+.RowPlotContainer > div:last-child {
+  flex: 4.0; /* Takes up 2.5 parts of the space */
 }
 
+/* Optional: If you want all children to have a minimum width, you can add a min-width property */
+.RowPlotContainer > div {
+  min-width: 100px; /* Adjust the minimum width as needed */
+}
 
+/* Table styling */
 table {
   border-collapse: collapse;
-  width: 90%; /* Adjust based on your layout */
+  width: 90%; /* Responsive table width */
   margin: 0 auto; /* Center table horizontally */
 }
 
