@@ -2,8 +2,6 @@ import {
   bestChannelColor,
   activeChannelsColor,
   plotFont,
-  percentageToFilterChannels,
-  gi,
 } from "../styles/StyleConstants"; // Adjusted to match the file name case
 import React, { useEffect } from "react";
 import Plot from "plotly.js-dist";
@@ -18,38 +16,44 @@ function ProbePlot({ xCoordinates, yCoordinates, location, activeIndices }) {
     activeLocationsY.push(yCoordinates[channelIndex]);
   }
 
+  const minActiveLocationY = Math.min(...activeLocationsY);
+  const maxActiveLocationY = Math.max(...activeLocationsY);
+
   const minX = Math.min(...xCoordinates);
   const maxX = Math.max(...xCoordinates);
   const minY = Math.min(...yCoordinates);
   const maxY = Math.max(...yCoordinates);
 
   useEffect(() => {
-    const plotData = [
-      // Marker for a specific location
-      {
-        x: [x_location],
-        y: [y_location],
-        type: "scatter",
-        mode: "markers",
-        marker: { color: bestChannelColor, size: 5, symbol: "star" }, // Use a distinct color and symbol
-        name: "Location",
-        showlegend: false,
-      },
-      // Background representing the probe
-    ];
+    // const plotData = [
+    //   // Marker for a specific location
+    //   {
+    //     x: [0.5],
+    //     y: [y_location],
+    //     type: "scatter",
+    //     mode: "markers",
+    //     marker: { color: bestChannelColor, size: 10, symbol: "star" }, // Use a distinct color and symbol
+    //     name: "Location",
+    //     showlegend: false,
+    //   },
+    //   // Background representing the probe
+    // ];
 
-    // Highlighting the active area across Y coordinates of active channels
-    activeIndices.forEach((channelIndex, i) => {
-      plotData.push({
-        x: [minX, maxX],
-        y: [yCoordinates[channelIndex], yCoordinates[channelIndex]],
-        type: "scatter",
-        mode: "markers",
-        marker: { color: activeChannelsColor, size: 5, symbol: "circle" }, // Highlighting the active area
-        showlegend: false,
-      });
-    });
-
+    // // Highlighting the active area across Y coordinates of active channels
+    // activeIndices.forEach(channelIndex => {
+    //   const yValue = yCoordinates[channelIndex];
+    //   const xValue = xCoordinates[channelIndex];
+    //   console.log("yValue: ", yValue);
+    //   plotData.push({
+    //     x: [0.5],
+    //     y: [yValue],
+    //     type: "scatter",
+    //     mode: "markers",
+    //     marker: { color: activeChannelsColor, size: 5, symbol: "circle" }, 
+    //     showlegend: false,
+    //   });
+    // });
+    const plotData = []
     const plotLayout = {
       title: "Location in Probe",
       autosize: true,
@@ -61,6 +65,7 @@ function ProbePlot({ xCoordinates, yCoordinates, location, activeIndices }) {
         zeroline: false,
         showticklabels: false,
         showline: false,
+        range: [0, 1],
       },
       yaxis: {
         title: "Depth (um)",
@@ -69,6 +74,20 @@ function ProbePlot({ xCoordinates, yCoordinates, location, activeIndices }) {
         range: [minY, maxY],
       },
       shapes: [
+        // Adding a rectangle from minActiveLocationY to maxActiveLocationY
+        {
+          type: "rect",
+          xref: "paper",
+          yref: "y",
+          x0: 0,
+          y0: minActiveLocationY,
+          x1: 1,
+          y1: maxActiveLocationY,
+          fillcolor: activeChannelsColor,
+          line: {
+            width: 0,
+          },
+        },
         // Adding a line for y_location
         {
           type: "line",
@@ -79,16 +98,16 @@ function ProbePlot({ xCoordinates, yCoordinates, location, activeIndices }) {
           y1: y_location,
           line: {
             color: bestChannelColor,
-            width: 4,
+            width: 1,
           },
-        },
+        },        
       ],
     };
 
     Plot.newPlot("probePlotDiv", plotData, plotLayout, {
       displayModeBar: false,
     });
-  }, [xCoordinates, yCoordinates, x_location, y_location, activeIndices]);
+  }, []);
 
   return <div id="probePlotDiv" style={{ width: "100%", height: "400px" }}></div>;
 }

@@ -40,16 +40,44 @@
 .plotsContainer {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
-  align-items: stretch; /* This ensures that children stretch to fill the container height */
+  justify-content: space-between; /* Distributes the children across the container's main axis */
+  align-items: stretch; /* Children will fill the container height, but we'll override this for centering content */
 }
 
+/* Targeting the direct children of .plotsContainer for specific flex values */
+.plotsContainer > div {
+  display: flex;
+  justify-content: center; /* Center children horizontally */
+  align-items: center; /* Center children vertically */
+  flex-direction: column; /* Aligns children content vertically for when you need more control inside the divs */
+}
+
+
 .plotsContainer > div:first-child {
-  flex: 9;
-  height: 400px;
+  flex: 5; /* 60% of the space */
+}
+
+.plotsContainer > div:nth-child(2) {
+  flex: 1; /* 10% of the space */
 }
 
 .plotsContainer > div:last-child {
-  flex: 1;
-  height: 400px;
+  flex: 2.5; /* 30% of the space */
+}
+
+
+table {
+  border-collapse: collapse;
+  width: 90%; /* Adjust based on your layout */
+  margin: 0 auto; /* Center table horizontally */
+}
+
+th, td {
+  border: 1px solid #ddd; /* Light grey border */
+  text-align: left;
+  padding: 8px;
+}
+
+th {
+  background-color: #f2f2f2; /* Light grey background for header */
 }

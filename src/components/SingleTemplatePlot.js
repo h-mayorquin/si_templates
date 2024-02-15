@@ -3,7 +3,7 @@ import calculatePeakToPeakValues from "../utils/CalculationUtils";
 import React, { useEffect } from "react";
 import Plot from "plotly.js-dist";
 
-function SingleTemplatePlot({ template_index, templateArray, samplingFrequency }) {
+function SingleTemplatePlot({ template_index, templateArray, samplingFrequency, activeIndices }) {
   useEffect(() => {
     const loadPlotData = async () => {
       if (!templateArray) return; // Exit early if templateArray is not available
@@ -12,7 +12,6 @@ function SingleTemplatePlot({ template_index, templateArray, samplingFrequency }
         const singleTemplate = await templateArray.get([template_index, null, null]);
         const peak_to_peak_values = calculatePeakToPeakValues(singleTemplate);
         const bestChannel = peak_to_peak_values.indexOf(Math.max(...peak_to_peak_values));
-        const bestChannelPeakToPeak = peak_to_peak_values[bestChannel];
         const singleTemplateBestChannel = singleTemplate.get([null, bestChannel]);
 
         const numberOfSamples = await singleTemplate.shape[0];
@@ -37,35 +36,24 @@ function SingleTemplatePlot({ template_index, templateArray, samplingFrequency }
         });
 
         const numberOfChannels = await singleTemplate.shape[1];
-        let firstChannelFound = true;
-
-        for (let channelIndex = 0; channelIndex < numberOfChannels; channelIndex++) {
-          const channelData = await singleTemplate.get([null, channelIndex]);
-          const yData = channelData.data;
-          const channelPeakToPeak = peak_to_peak_values[channelIndex];
-          if (channelPeakToPeak >= bestChannelPeakToPeak * percentageToFilterChannels) {
-            if (channelIndex === bestChannel) {
-              continue;
-            }
-
-            plotData.push({
-              x: timeMilliseconds,
-              y: yData,
-              type: "scatter",
-              mode: "lines",
-              line: {
-                color: activeChannelsColor,
-                width: 0.5,
-                opacity: 0.01,
-              },
-              name: `Active Channels`,
-              legendgroup: "Active Channels",
-              showlegend: firstChannelFound,
-              visible: "legendonly",
-            });
-            firstChannelFound = false;
-          }
-        }
+        const firstActiveChannelIndex = activeIndices[0];
+        activeIndices.forEach((channelIndex) => {
+          plotData.push({
+            x: timeMilliseconds,
+            y: singleTemplate.get([null, channelIndex]).data,
+            type: "scatter",
+            mode: "lines",
+            line: {
+              color: activeChannelsColor,
+              width: 0.5,
+              opacity: 0.1,
+            },
+            name: `Active Channels`,
+            legendgroup: "Active Channels",
+            showlegend: firstActiveChannelIndex == channelIndex,
+            visible: "legendonly",
+          });
+        });
 
         const plotLayout = {
           title: `Template Index: ${template_index}`,
@@ -81,14 +69,14 @@ function SingleTemplatePlot({ template_index, templateArray, samplingFrequency }
           },
         };
 
-        Plot.newPlot("plotDiv", plotData, plotLayout, { displayModeBar: true });
+        Plot.newPlot("plotDiv", plotData, plotLayout, { displayModeBar: false });
       } catch (error) {
         console.error("Error loading plot data:", error);
       }
     };
 
     loadPlotData();
-  }, [template_index, templateArray]); // Dependency array to re-run this effect when template_index or templateArray changes
+  }, []); // Dependency array to re-run this effect when template_index or templateArray changes
 
   return <div id="plotDiv" style={{ width: "100%", height: "400px" }}></div>;
 }

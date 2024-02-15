@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import Plot from "plotly.js-dist";
 import { openGroup, HTTPStore } from "zarr";
 import "../styles/App.css";
 import calculatePeakToPeakValues from "../utils/CalculationUtils";
 
 import ProbePlot from "./ProbePlot";
 import SingleTemplatePlot from "./SingleTemplatePlot";
+import DataTablePlot from "./DataTablePlot";
 
 const percentageToFilterChannels = 0.1;
 
@@ -23,6 +23,7 @@ function App() {
   const [location, setLocation] = useState([0, 0]);
   const [samplingFrequency, setSamplingFrequency] = useState(null);
   const [activeIndices, setActiveIndices] = useState([]);
+  const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -76,6 +77,15 @@ function App() {
         }
         setActiveIndices(_activeIndices);
 
+        // mockup data for the table
+        const data = [
+          { attribute: "Attribute 1", value: "Value 1" },
+          { attribute: "Attribute 2", value: "Value 2" },
+          { attribute: "Attribute 3", value: "Value 3" },
+          // Add more rows as needed
+        ];
+        setTableData(data);
+
         const locationX = xCoordsData[bestChannel];
         const locationY = yCoordsData[bestChannel];
         setLocation([locationX, locationY]);
@@ -89,6 +99,7 @@ function App() {
     loadData();
   }, []); // an empty dependency array means this effect will only run once
 
+  // Update the return statement in the App component
   return (
     <div className="App">
       <h2>Template plots</h2>
@@ -98,6 +109,7 @@ function App() {
             template_index={template_index}
             templateArray={templateArray}
             samplingFrequency={samplingFrequency}
+            activeIndices={activeIndices}
           />
           <ProbePlot
             xCoordinates={probeXCoordinates}
@@ -105,6 +117,7 @@ function App() {
             location={location}
             activeIndices={activeIndices}
           />
+          <DataTablePlot tableData={tableData} />
         </div>
       ) : (
         <div>Loading template data...</div>
@@ -114,3 +127,6 @@ function App() {
 }
 
 export default App;
+
+
+
