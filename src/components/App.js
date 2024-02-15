@@ -104,21 +104,16 @@ function App() {
     <div className="App">
       <h2>Template plots</h2>
       {!isLoading && templateArray ? (
-        <div className="plotsContainer">
-          <SingleTemplatePlot
-            template_index={template_index}
-            templateArray={templateArray}
-            samplingFrequency={samplingFrequency}
-            activeIndices={activeIndices}
-          />
-          <ProbePlot
-            xCoordinates={probeXCoordinates}
-            yCoordinates={probeYCoordinates}
-            location={location}
-            activeIndices={activeIndices}
-          />
-          <DataTablePlot tableData={tableData} />
-        </div>
+        <RowPlotsContainer
+          template_index={template_index}
+          templateArray={templateArray}
+          samplingFrequency={samplingFrequency}
+          probeXCoordinates={probeXCoordinates}
+          probeYCoordinates={probeYCoordinates}
+          location={location}
+          activeIndices={activeIndices}
+          tableData={tableData}
+        />
       ) : (
         <div>Loading template data...</div>
       )}
@@ -129,4 +124,32 @@ function App() {
 export default App;
 
 
+const RowPlotsContainer = ({
+  template_index,
+  templateArray,
+  samplingFrequency,
+  probeXCoordinates,
+  probeYCoordinates,
+  location,
+  activeIndices,
+  tableData
+}) => {
+  return (
+    <div className="plotsContainer">
+      <SingleTemplatePlot
+        template_index={template_index}
+        templateArray={templateArray}
+        samplingFrequency={samplingFrequency}
+        activeIndices={activeIndices}
+      />
+      <ProbePlot
+        xCoordinates={probeXCoordinates}
+        yCoordinates={probeYCoordinates}
+        location={location}
+        activeIndices={activeIndices}
+      />
+      <DataTablePlot tableData={tableData} />
+    </div>
+  );
+};
 
