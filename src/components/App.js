@@ -11,7 +11,7 @@ import "../styles/App.css";
 function App() {
   const s3Url = "https://spikeinterface-template-database.s3.us-east-2.amazonaws.com/test_templates";
   const storeRef = useRef(new HTTPStore(s3Url)); // Store reference for data fetching
-  const [templateIndices, setTemplateIndices] = useState([0, 5, 10]); // Example indices, adjust as needed
+  const [templateIndices, setTemplateIndices] = useState([25, 5, 10, 33]); // Example indices, adjust as needed
 
   return (
     <div className="App">
@@ -66,9 +66,9 @@ const RowPlotContainer = ({ templateIndex, storeRef }) => {
 
         // Set table data (mockup or real)
         const data = [
-          { attribute: "Attribute 1", value: "Value 1" },
-          { attribute: "Attribute 2", value: "Value 2" },
-          { attribute: "Attribute 3", value: "Value 3" },
+          { attribute: "Number of Samples", value: "855" },
+          { attribute: "STD", value: "1.10" },
+          { attribute: "Brain Location", value: "Hippocampus" },
         ];
         setTableData(data);
 

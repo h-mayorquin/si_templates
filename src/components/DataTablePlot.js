@@ -8,7 +8,7 @@ function DataTablePlot({tableData}) {
       <table>
         <thead>
           <tr>
-            <th>Attribute</th>
+            <th>Template property</th>
             <th>Value</th>
           </tr>
         </thead>
