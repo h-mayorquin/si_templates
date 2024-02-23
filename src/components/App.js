@@ -1,26 +1,50 @@
-import React, { useState, useRef, useEffect } from "react";
-import { HTTPStore } from "zarr";
-import SingleTemplatePlot from "./SingleTemplatePlot";
-import ProbePlot from "./ProbePlot";
-import DataTablePlot from "./DataTablePlot";
-import { openGroup } from "zarr";
-import calculatePeakToPeakValues from "../utils/CalculationUtils";
-import { percentageToFilterChannels } from "../styles/StyleConstants";
-import "../styles/App.css";
+import React, { useState, useEffect } from 'react';
+import { HTTPStore } from 'zarr';
+import SingleTemplatePlot from './SingleTemplatePlot';
+import ProbePlot from './ProbePlot';
+import DataTablePlot from './DataTablePlot';
+import { openGroup } from 'zarr';
+import calculatePeakToPeakValues from '../utils/CalculationUtils';
+import { percentageToFilterChannels } from '../styles/StyleConstants';
+import '../styles/App.css';
 
 function App() {
-  const s3Url = "https://spikeinterface-template-database.s3.us-east-2.amazonaws.com/test_templates";
-  const storeRef = useRef(new HTTPStore(s3Url)); // Store reference for data fetching
-  const [templateIndices, setTemplateIndices] = useState([25, 5, 10, 33]); // Example indices, adjust as needed
+  const s3Url = 'https://spikeinterface-template-database.s3.us-east-2.amazonaws.com/test_templates';
+  const storeRef = new HTTPStore(s3Url); // Assuming this is correct for your setup
+  const [templateIndices, setTemplateIndices] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
+  const batchSize = 15; // Number of templates to load per batch
+
+  const loadTemplates = () => {
+    const nextIndex = templateIndices.length === 0 ? 0 : Math.max(...templateIndices) + 1;
+    const newIndices = Array.from({ length: batchSize }, (_, i) => i + nextIndex);
+    
+    setTemplateIndices(prevIndices => [...new Set([...prevIndices, ...newIndices])]); // Use a Set to ensure uniqueness, just in case
+    
+    if (nextIndex + batchSize >= 100) { // Adjust this condition based on actual data availability
+      setHasMore(false);
+    }
+  };
+
+  // Load the initial templates when the component mounts
+  useEffect(() => {
+    loadTemplates();
+  }, []);
+
 
   return (
     <div className="App">
       <h2>Template plots</h2>
       <div className="ColumnPlotContainer">
         {templateIndices.map((templateIndex) => (
-          <RowPlotContainer key={templateIndex} templateIndex={templateIndex} storeRef={storeRef.current} />
+          <RowPlotContainer key={templateIndex} templateIndex={templateIndex} storeRef={storeRef} />
         ))}
       </div>
+      {hasMore && (
+        <button onClick={loadTemplates} className="load-more-button">
+          Load More Templates
+        </button>
+      )}
     </div>
   );
 }
@@ -48,8 +72,8 @@ const RowPlotContainer = ({ templateIndex, storeRef }) => {
         setSamplingFrequency(attributes["sampling_frequency"]);
 
         // Fetch probe data
-        const xCoords = await probeGroup.getItem("x").then(data => data.get(null));
-        const yCoords = await probeGroup.getItem("y").then(data => data.get(null));
+        const xCoords = await probeGroup.getItem("x").then((data) => data.get(null));
+        const yCoords = await probeGroup.getItem("y").then((data) => data.get(null));
         setProbeXCoordinates(xCoords.data);
         setProbeYCoordinates(yCoords.data);
 
@@ -59,9 +83,11 @@ const RowPlotContainer = ({ templateIndex, storeRef }) => {
         const singleTemplate = await templateArray.get([templateIndex, null, null]);
         const peakToPeakValues = calculatePeakToPeakValues(singleTemplate);
         const bestChannel = peakToPeakValues.indexOf(Math.max(...peakToPeakValues));
-        
+
         // Active indices calculation
-        const _activeIndices = peakToPeakValues.map((value, index) => value >= peakToPeakValues[bestChannel] * percentageToFilterChannels ? index : null).filter(index => index !== null);
+        const _activeIndices = peakToPeakValues
+          .map((value, index) => (value >= peakToPeakValues[bestChannel] * percentageToFilterChannels ? index : null))
+          .filter((index) => index !== null);
         setActiveIndices(_activeIndices);
 
         // Set table data (mockup or real)
