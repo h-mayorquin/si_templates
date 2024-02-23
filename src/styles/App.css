@@ -46,7 +46,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 20px; /* Adjust space between each RowPlotContainer */
+  gap: 100px; /* Adjust space between each RowPlotContainer */
   width: 100%; /* Use full width to avoid compression */
 }
 
@@ -54,34 +54,33 @@
 .RowPlotContainer {
   display: flex;
   flex-direction: row;
+  align-items: stretch; 
   justify-content: space-between;
-  align-items: stretch;
-  width: 100%; /* Adjust to ensure containers are not compressed */
+  width: 100%;
 }
 
-.RowPlotContainer> div {
+.RowPlotContainer > .checkbox-container {
   display: flex;
-  justify-content: center; /* Center children horizontally */
-  align-items: center; /* Center children vertically */
-  flex-direction: column; /* Aligns children content vertically for when you need more control inside the divs */
+  align-items: center; /* Center checkbox vertically */
+  justify-content: center; /* Center checkbox horizontally */
+  max-width: 25px; /* Set a maximum width to prevent growth */
+  margin-right: 10px; /* Optional: Add some margin to separate from the next column */
 }
 
-/* Specific flex values for child divs to maintain desired ratios */
-.RowPlotContainer > div:first-child {
-  flex: 8; /* Takes up 5 parts of the space */
+
+
+/* Specific flex values for plot divs to maintain desired ratios */
+.RowPlotContainer > .template-plot {
+  flex: 8 1 auto; /* grow, shrink, basis */
 }
 
-.RowPlotContainer > div:nth-child(2) {
-  flex: 1.0; /* Takes up 1 part of the space */
+.RowPlotContainer > .probe-plot { /* Adjusted due to new checkbox column */
+  flex: 1 1 auto;
 }
 
-.RowPlotContainer > div:last-child {
-  flex: 4.0; /* Takes up 2.5 parts of the space */
-}
-
-/* Optional: If you want all children to have a minimum width, you can add a min-width property */
-.RowPlotContainer > div {
-  min-width: 100px; /* Adjust the minimum width as needed */
+.RowPlotContainer > .table-plot {
+  flex: 4 1 auto;
+  align-self: center; /* Center vertically */
 }
 
 /* Table styling */

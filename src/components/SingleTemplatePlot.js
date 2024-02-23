@@ -1,4 +1,4 @@
-import { bestChannelColor, activeChannelsColor, plotFont, percentageToFilterChannels } from "../styles/StyleConstants"; // Adjusted to match the file name case
+import { bestChannelColor, activeChannelsColor, plotFont, percentageToFilterChannels } from "../styles/StyleConstants";
 import calculatePeakToPeakValues from "../utils/CalculationUtils";
 import React, { useEffect } from "react";
 import Plot from "plotly.js-dist";
@@ -12,9 +12,9 @@ function SingleTemplatePlot({ templateIndex, templateArray, samplingFrequency, a
         const singleTemplate = await templateArray.get([templateIndex, null, null]);
         const peak_to_peak_values = calculatePeakToPeakValues(singleTemplate);
         const bestChannel = peak_to_peak_values.indexOf(Math.max(...peak_to_peak_values));
-        const singleTemplateBestChannel = singleTemplate.get([null, bestChannel]);
+        const singleTemplateBestChannel = await singleTemplate.get([null, bestChannel]);
 
-        const numberOfSamples = await singleTemplate.shape[0];
+        const numberOfSamples = singleTemplate.shape[0];
         const xData = Array.from({ length: numberOfSamples }, (_, i) => i);
         const timeMilliseconds = xData.map((value) => (value / samplingFrequency) * 1000.0);
 
@@ -35,7 +35,7 @@ function SingleTemplatePlot({ templateIndex, templateArray, samplingFrequency, a
           showlegend: true,
         });
 
-        const numberOfChannels = await singleTemplate.shape[1];
+        const numberOfChannels = singleTemplate.shape[1];
         const firstActiveChannelIndex = activeIndices[0];
         activeIndices.forEach((channelIndex) => {
           plotData.push({
@@ -62,10 +62,11 @@ function SingleTemplatePlot({ templateIndex, templateArray, samplingFrequency, a
           xaxis: { title: "Time (ms)", showgrid: false },
           yaxis: { title: "Amplitude (uV)", showgrid: false },
           legend: {
-            x: 0.1,
-            y: 0.1,
+            x: 0.075,
+            y: 0.075,
             xanchor: "left",
             yanchor: "bottom",
+            bgcolor: 'rgba(0,0,0,0)', // Make legend background transparent
           },
         };
         const plotDivId = `plotDiv${templateIndex}`; // Unique ID for each plot
@@ -76,7 +77,7 @@ function SingleTemplatePlot({ templateIndex, templateArray, samplingFrequency, a
     };
 
     loadPlotData();
-  }, [templateIndex]); // Dependency array to re-run this effect when templateIndex or templateArray changes
+  }, [templateIndex, templateArray, samplingFrequency, activeIndices]); // Updated dependency array
 
   return <div id={`plotDiv${templateIndex}`} style={{ width: "100%", height: "400px" }}></div>;
 }

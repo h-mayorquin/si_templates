@@ -23,8 +23,13 @@ function ProbePlot({ templateIndex, xCoordinates, yCoordinates, location, active
   useEffect(() => {
     const plotData = [];
     const plotLayout = {
-      title: "Location in Probe",
-      autosize: true,
+      title: {
+        text: 'Location<br>In<br>Probe',
+        font: plotFont,
+        xref: 'paper',
+        x: 0.5, // This centers the title
+        y: 0.9 // You can adjust this to move the title up or down
+      },      autosize: true,
       paper_bgcolor: "rgba(0,0,0,0)",
       plot_bgcolor: "#f0f0f0", // A solid color for the plot background if needed
       font: plotFont,
