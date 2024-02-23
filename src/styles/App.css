@@ -107,3 +107,13 @@ th {
   font-size: 16px;
   cursor: pointer;
 }
+
+#code-container {
+  font-family: 'Fira Code', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  background-color: #ffffff00;
+  border-radius: 5px;
+  overflow-x: auto;
+  padding-left: 200px;
+  padding-right: 500px;
+  padding-bottom: 20px;
+}

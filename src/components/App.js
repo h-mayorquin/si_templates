@@ -3,6 +3,7 @@ import { HTTPStore } from "zarr";
 import SingleTemplatePlot from "./SingleTemplatePlot";
 import ProbePlot from "./ProbePlot";
 import DataTablePlot from "./DataTablePlot";
+import CodeSnippet from "./CodeSnippet";
 import { openGroup } from "zarr";
 import calculatePeakToPeakValues from "../utils/CalculationUtils";
 import { percentageToFilterChannels } from "../styles/StyleConstants";
@@ -43,7 +44,9 @@ function App() {
 
   return (
     <div className="App">
-      <h2>Template plots</h2>
+      <h2>Templates</h2>
+      <CodeSnippet selectedTemplates={selectedTemplates} />
+
       <div className="ColumnPlotContainer">
         {templateIndices.map((templateIndex) => (
           <RowPlotContainer
@@ -110,10 +113,10 @@ const RowPlotContainer = ({ templateIndex, storeRef, isSelected, toggleSelection
           { attribute: "Number of Samples", value: "855" },
           { attribute: "Dataset", value: "IBL" },
           { attribute: "Brain Location", value: "Hippocampus" },
-          {attribute: "Channel with max amplitude", value: bestChannel},
-          {attribute: "Amplitude", value: peakToPeakValues[bestChannel]},
-          {attribute: "Sampling Frequency", value: samplingFrequency},
-          {attribute: "Location", value: location},
+          { attribute: "Channel with max amplitude", value: bestChannel },
+          { attribute: "Amplitude", value: peakToPeakValues[bestChannel] },
+          { attribute: "Sampling Frequency", value: samplingFrequency },
+          { attribute: "Location", value: location },
         ];
         setTableData(data);
 
@@ -140,14 +143,12 @@ const RowPlotContainer = ({ templateIndex, storeRef, isSelected, toggleSelection
     <div className="RowPlotContainer">
       <div className="checkbox-container">
         <label>
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={() => toggleSelection(templateIndex)}
-          /> Select
+          <input type="checkbox" checked={isSelected} onChange={() => toggleSelection(templateIndex)} /> Select
         </label>
       </div>
-      <div className="template-plot"> {/* Wrap SingleTemplatePlot in a div if needed for consistent flex behavior */}
+      <div className="template-plot">
+        {" "}
+        {/* Wrap SingleTemplatePlot in a div if needed for consistent flex behavior */}
         <SingleTemplatePlot
           templateIndex={templateIndex}
           templateArray={templateArray}
@@ -157,7 +158,7 @@ const RowPlotContainer = ({ templateIndex, storeRef, isSelected, toggleSelection
           samplingFrequency={samplingFrequency}
         />
       </div>
-      <div className="probe-plot"> 
+      <div className="probe-plot">
         <ProbePlot
           templateIndex={templateIndex}
           xCoordinates={probeXCoordinates}
@@ -166,7 +167,7 @@ const RowPlotContainer = ({ templateIndex, storeRef, isSelected, toggleSelection
           activeIndices={activeIndices}
         />
       </div>
-      <div className="table-plot"> 
+      <div className="table-plot">
         <DataTablePlot tableData={tableData} />
       </div>
     </div>
