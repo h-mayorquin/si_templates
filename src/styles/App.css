@@ -75,7 +75,7 @@
 }
 
 .RowPlotContainer > .probe-plot { /* Adjusted due to new checkbox column */
-  flex: 1.5 1 auto;
+  flex: 1.8 1 auto;
 }
 
 .RowPlotContainer > .table-plot {
@@ -116,4 +116,7 @@ th {
   padding-left: 200px;
   padding-right: 500px;
   padding-bottom: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
 }
