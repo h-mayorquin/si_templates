@@ -147,8 +147,6 @@ const RowPlotContainer = ({ templateIndex, storeRef, isSelected, toggleSelection
         </label>
       </div>
       <div className="template-plot">
-        {" "}
-        {/* Wrap SingleTemplatePlot in a div if needed for consistent flex behavior */}
         <SingleTemplatePlot
           templateIndex={templateIndex}
           templateArray={templateArray}

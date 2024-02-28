@@ -70,7 +70,7 @@ function SingleTemplatePlot({ templateIndex, templateArray, samplingFrequency, a
           },
         };
         const plotDivId = `plotDiv${templateIndex}`; // Unique ID for each plot
-        Plot.newPlot(plotDivId, plotData, plotLayout, { displayModeBar: false });
+        Plot.newPlot(plotDivId, plotData, plotLayout, { displayModeBar: false, responsive: true});
       } catch (error) {
         console.error("Error loading plot data:", error);
       }
@@ -79,7 +79,7 @@ function SingleTemplatePlot({ templateIndex, templateArray, samplingFrequency, a
     loadPlotData();
   }, [templateIndex, templateArray, samplingFrequency, activeIndices]); // Updated dependency array
 
-  return <div id={`plotDiv${templateIndex}`} style={{ width: "100%", height: "400px" }}></div>;
+  return <div id={`plotDiv${templateIndex}`}></div>;
 }
 
 export default SingleTemplatePlot;

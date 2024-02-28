@@ -80,10 +80,11 @@ function ProbePlot({ templateIndex, xCoordinates, yCoordinates, location, active
     const probePlotDivId = `probePlotDiv${templateIndex}`; // Unique ID for each plot
     Plot.newPlot(probePlotDivId, plotData, plotLayout, {
       displayModeBar: false,
+      responsive: true,
     });
   }, [templateIndex]);
 
-  return <div id={`probePlotDiv${templateIndex}`} style={{ width: "100%", height: "400px" }}></div>;
+  return <div id={`probePlotDiv${templateIndex}`} ></div>;
 }
 
 export default ProbePlot;

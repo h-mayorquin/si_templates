@@ -4,7 +4,7 @@ function DataTablePlot({tableData}) {
 
   
   return (
-    <div style={{ height: "400px" }}>
+    <div>
       <table>
         <thead>
           <tr>

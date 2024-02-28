@@ -16,6 +16,21 @@
   }
 }
 
+#code-container {
+  font-family: 'Fira Code', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+  background-color: #ffffff00;
+  border-radius: 5px;
+  overflow-x: auto;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  width: calc(100% - 40px); /* Responsive width with margin */
+  margin: 20px auto; /* Centering with auto margins */
+  padding: 20px; /* Padding inside the container */
+  box-sizing: border-box; /* Includes padding in the element's total width and height */
+  font-size: 2em; /* Base font size in ems */
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -44,44 +59,35 @@
 .ColumnPlotContainer {
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: flex-start;
   gap: 100px; /* Adjust space between each RowPlotContainer */
-  width: 100%; /* Use full width to avoid compression */
+  /* border: 2px solid red; Debugging: visualizes the outer boundary of the grid */
 }
 
-/* Styling for each row plot container */
 .RowPlotContainer {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch; 
-  justify-content: space-between;
-  width: 100%;
+  display: grid;
+  grid-template-columns: 5% 50% 15% 30%;
+  /* border: 2px solid black; Debugging: visualizes the outer boundary of the grid */
+  justify-content: start; /* Aligns the grid horizontally (main axes) */
 }
 
-.RowPlotContainer > .checkbox-container {
-  display: flex;
-  align-items: center; /* Center checkbox vertically */
-  justify-content: center; /* Center checkbox horizontally */
-  max-width: 25px; /* Set a maximum width to prevent growth */
-  margin-right: 10px; /* Optional: Add some margin to separate from the next column */
+.RowPlotContainer > * {
+  max-width: 100%;
+  /* border: 2px solid rgb(43, 0, 233); Debugging: visualizes the outer boundary of the grid */
+}
+
+.RowPlotContainer .probe-plot {
+  box-sizing: border-box;
+  max-width: 200px;
+  /* max-width: 7.0vw;   */
+}
+
+.RowPlotContainer .table-plot {
+  align-self: center; /* Aligns the table vertically (cross axes) */
+  justify-self: start; /* Aligns the item to the start (left) of the grid cell */
 }
 
 
-
-/* Specific flex values for plot divs to maintain desired ratios */
-.RowPlotContainer > .template-plot {
-  flex: 8 1 auto; /* grow, shrink, basis */
-}
-
-.RowPlotContainer > .probe-plot { /* Adjusted due to new checkbox column */
-  flex: 1.8 1 auto;
-}
-
-.RowPlotContainer > .table-plot {
-  flex: 4 1 auto;
-  align-self: center; /* Center vertically */
-}
 
 /* Table styling */
 table {
@@ -108,15 +114,3 @@ th {
   cursor: pointer;
 }
 
-#code-container {
-  font-family: 'Fira Code', Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-  background-color: #ffffff00;
-  border-radius: 5px;
-  overflow-x: auto;
-  padding-left: 200px;
-  padding-right: 500px;
-  padding-bottom: 20px;
-  position: sticky;
-  top: 0;
-  z-index: 999;
-}
