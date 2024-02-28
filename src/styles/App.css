@@ -28,7 +28,7 @@
   margin: 20px auto; /* Centering with auto margins */
   padding: 20px; /* Padding inside the container */
   box-sizing: border-box; /* Includes padding in the element's total width and height */
-  font-size: 2em; /* Base font size in ems */
+  font-size: 1.5em; /* Base font size in ems */
 }
 
 .App-header {

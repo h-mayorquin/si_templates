@@ -1,4 +1,4 @@
-import { bestChannelColor, activeChannelsColor, plotFont, percentageToFilterChannels } from "../styles/StyleConstants";
+import { bestChannelColor, activeChannelsColor, plotFont} from "../styles/StyleConstants";
 import calculatePeakToPeakValues from "../utils/CalculationUtils";
 import React, { useEffect } from "react";
 import Plot from "plotly.js-dist";
@@ -35,7 +35,6 @@ function SingleTemplatePlot({ templateIndex, templateArray, samplingFrequency, a
           showlegend: true,
         });
 
-        const numberOfChannels = singleTemplate.shape[1];
         const firstActiveChannelIndex = activeIndices[0];
         activeIndices.forEach((channelIndex) => {
           plotData.push({
@@ -50,7 +49,7 @@ function SingleTemplatePlot({ templateIndex, templateArray, samplingFrequency, a
             },
             name: `Active Channels`,
             legendgroup: "Active Channels",
-            showlegend: firstActiveChannelIndex == channelIndex,
+            showlegend: firstActiveChannelIndex === channelIndex,
             visible: "legendonly",
           });
         });

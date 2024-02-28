@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import Plot from "plotly.js-dist";
 
 function ProbePlot({ templateIndex, xCoordinates, yCoordinates, location, activeIndices }) {
-  const x_location = location[0];
   const y_location = location[1];
   let activeLocationsX = [];
   let activeLocationsY = [];
@@ -15,8 +14,6 @@ function ProbePlot({ templateIndex, xCoordinates, yCoordinates, location, active
   const minActiveLocationY = Math.min(...activeLocationsY);
   const maxActiveLocationY = Math.max(...activeLocationsY);
 
-  const minX = Math.min(...xCoordinates);
-  const maxX = Math.max(...xCoordinates);
   const minY = Math.min(...yCoordinates);
   const maxY = Math.max(...yCoordinates);
 
